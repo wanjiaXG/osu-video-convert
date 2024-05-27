@@ -230,17 +230,22 @@ namespace osu_video_convert
             FixVideo(e.FullPath);
         }
 
+
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
             FixVideo(e.FullPath);
         }
 
-        private string LastFile = string.Empty;
+        private static string[] Extensions = new[] { ".avi", ".mp4", "*.flv"};
         private void FixVideo(string fullPath)
         {
             if (Directory.Exists(fullPath))
             {
-                foreach (var item in new DirectoryInfo(fullPath).GetFiles("*.mp4"))
+                //new DirectoryInfo(fullPath).GetFiles()
+                foreach (var item in new DirectoryInfo(fullPath)
+                    .GetFiles()
+                    .Where(file => Extensions.Any(file.FullName.ToLower().EndsWith))
+                    .ToList())
                 {
                     lock (this)
                     {
@@ -338,7 +343,6 @@ namespace osu_video_convert
                 //二次转换(有损)
                 using (Process proc = Process.Start(info))
                 {
-                    Console.WriteLine(info.Arguments);
                     Log($"由于视频编码不兼容flv，正在二次转换, 本次转换耗时会长一点 {originalFile}.");
                     int maxCount = 10;
                     int count = 0;
