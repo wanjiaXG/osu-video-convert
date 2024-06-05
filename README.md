@@ -12,4 +12,4 @@ English：
 Running this program for a long time can monitor new map in real-time and convert them.
 
 Change Language:
-[!image](https://raw.githubusercontent.com/wanjiaXG/osu-video-convert/master/language.png)
+![image](https://raw.githubusercontent.com/wanjiaXG/osu-video-convert/master/language.png)
