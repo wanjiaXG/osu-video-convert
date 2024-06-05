@@ -31,40 +31,43 @@ namespace osu_video_convert
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.label1 = new System.Windows.Forms.Label();
+            this.osuRootPathLabel = new System.Windows.Forms.Label();
             this.osuPathTB = new System.Windows.Forms.TextBox();
             this.BrowserBtn = new System.Windows.Forms.Button();
             this.readDefaultBtn = new System.Windows.Forms.Button();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.logTB = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.fixAll = new System.Windows.Forms.Button();
+            this.RunningLogLabel = new System.Windows.Forms.Label();
+            this.fixAllBtn = new System.Windows.Forms.Button();
+            this.languageLabel = new System.Windows.Forms.Label();
+            this.languageCB = new System.Windows.Forms.ComboBox();
+            this.HintLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // label1
+            // osuRootPathLabel
             // 
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(62, 23);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "osu根目录";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.osuRootPathLabel.Location = new System.Drawing.Point(12, 9);
+            this.osuRootPathLabel.Name = "osuRootPathLabel";
+            this.osuRootPathLabel.Size = new System.Drawing.Size(94, 23);
+            this.osuRootPathLabel.TabIndex = 0;
+            this.osuRootPathLabel.Text = "osu根目录";
+            this.osuRootPathLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // osuPathTB
             // 
             this.osuPathTB.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.osuPathTB.Location = new System.Drawing.Point(80, 11);
+            this.osuPathTB.Location = new System.Drawing.Point(112, 11);
             this.osuPathTB.Name = "osuPathTB";
             this.osuPathTB.ReadOnly = true;
-            this.osuPathTB.Size = new System.Drawing.Size(650, 21);
+            this.osuPathTB.Size = new System.Drawing.Size(534, 21);
             this.osuPathTB.TabIndex = 1;
             this.osuPathTB.TextChanged += new System.EventHandler(this.osuPathTB_TextChanged);
             // 
             // BrowserBtn
             // 
             this.BrowserBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BrowserBtn.Location = new System.Drawing.Point(736, 9);
+            this.BrowserBtn.Location = new System.Drawing.Point(652, 9);
             this.BrowserBtn.Name = "BrowserBtn";
             this.BrowserBtn.Size = new System.Drawing.Size(75, 23);
             this.BrowserBtn.TabIndex = 3;
@@ -75,9 +78,9 @@ namespace osu_video_convert
             // readDefaultBtn
             // 
             this.readDefaultBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.readDefaultBtn.Location = new System.Drawing.Point(817, 9);
+            this.readDefaultBtn.Location = new System.Drawing.Point(736, 9);
             this.readDefaultBtn.Name = "readDefaultBtn";
-            this.readDefaultBtn.Size = new System.Drawing.Size(96, 23);
+            this.readDefaultBtn.Size = new System.Drawing.Size(177, 23);
             this.readDefaultBtn.TabIndex = 4;
             this.readDefaultBtn.Text = "自动获取路径";
             this.readDefaultBtn.UseVisualStyleBackColor = true;
@@ -102,38 +105,73 @@ namespace osu_video_convert
             this.logTB.Size = new System.Drawing.Size(901, 341);
             this.logTB.TabIndex = 5;
             // 
-            // label2
+            // RunningLogLabel
             // 
-            this.label2.Location = new System.Drawing.Point(12, 71);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(62, 23);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "运行日志";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.RunningLogLabel.Location = new System.Drawing.Point(12, 71);
+            this.RunningLogLabel.Name = "RunningLogLabel";
+            this.RunningLogLabel.Size = new System.Drawing.Size(221, 23);
+            this.RunningLogLabel.TabIndex = 6;
+            this.RunningLogLabel.Text = "运行日志";
+            this.RunningLogLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // fixAll
+            // fixAllBtn
             // 
-            this.fixAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.fixAll.Location = new System.Drawing.Point(794, 68);
-            this.fixAll.Name = "fixAll";
-            this.fixAll.Size = new System.Drawing.Size(119, 23);
-            this.fixAll.TabIndex = 7;
-            this.fixAll.Text = "修复本地所有视频";
-            this.fixAll.UseVisualStyleBackColor = true;
-            this.fixAll.Click += new System.EventHandler(this.fixAll_Click);
+            this.fixAllBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.fixAllBtn.Location = new System.Drawing.Point(736, 68);
+            this.fixAllBtn.Name = "fixAllBtn";
+            this.fixAllBtn.Size = new System.Drawing.Size(177, 23);
+            this.fixAllBtn.TabIndex = 7;
+            this.fixAllBtn.Text = "修复本地所有视频";
+            this.fixAllBtn.UseVisualStyleBackColor = true;
+            this.fixAllBtn.Click += new System.EventHandler(this.fixAll_Click);
+            // 
+            // languageLabel
+            // 
+            this.languageLabel.Location = new System.Drawing.Point(13, 36);
+            this.languageLabel.Name = "languageLabel";
+            this.languageLabel.Size = new System.Drawing.Size(93, 23);
+            this.languageLabel.TabIndex = 8;
+            this.languageLabel.Text = "语言";
+            this.languageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // languageCB
+            // 
+            this.languageCB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.languageCB.FormattingEnabled = true;
+            this.languageCB.Items.AddRange(new object[] {
+            "English",
+            "中文"});
+            this.languageCB.Location = new System.Drawing.Point(112, 39);
+            this.languageCB.Name = "languageCB";
+            this.languageCB.Size = new System.Drawing.Size(121, 20);
+            this.languageCB.TabIndex = 9;
+            this.languageCB.TextChanged += new System.EventHandler(this.comboBox1_TextChanged);
+            // 
+            // HintLabel
+            // 
+            this.HintLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.HintLabel.Location = new System.Drawing.Point(239, 39);
+            this.HintLabel.Name = "HintLabel";
+            this.HintLabel.Size = new System.Drawing.Size(488, 52);
+            this.HintLabel.TabIndex = 10;
+            this.HintLabel.Text = "*最小化本程序可实时监控新图并转换";
+            this.HintLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(925, 450);
-            this.Controls.Add(this.fixAll);
-            this.Controls.Add(this.label2);
+            this.Controls.Add(this.HintLabel);
+            this.Controls.Add(this.languageCB);
+            this.Controls.Add(this.languageLabel);
+            this.Controls.Add(this.fixAllBtn);
+            this.Controls.Add(this.RunningLogLabel);
             this.Controls.Add(this.logTB);
             this.Controls.Add(this.readDefaultBtn);
             this.Controls.Add(this.BrowserBtn);
             this.Controls.Add(this.osuPathTB);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.osuRootPathLabel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.ShowInTaskbar = false;
@@ -147,14 +185,17 @@ namespace osu_video_convert
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label osuRootPathLabel;
         private System.Windows.Forms.TextBox osuPathTB;
         private System.Windows.Forms.Button BrowserBtn;
         private System.Windows.Forms.Button readDefaultBtn;
         private System.Windows.Forms.NotifyIcon notifyIcon;
         private System.Windows.Forms.TextBox logTB;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button fixAll;
+        private System.Windows.Forms.Label RunningLogLabel;
+        private System.Windows.Forms.Button fixAllBtn;
+        private System.Windows.Forms.Label languageLabel;
+        private System.Windows.Forms.ComboBox languageCB;
+        private System.Windows.Forms.Label HintLabel;
     }
 }
 

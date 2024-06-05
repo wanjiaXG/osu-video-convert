@@ -20,6 +20,7 @@ namespace osu_video_convert
     public partial class MainForm : Form
     {
         public const string OsuRootPathKey = "osu_video_convert_osu_root_path";
+        public const string LanguageKey = "osu_video_convert_language";
 
         private FileSystemWatcher Watcher;
 
@@ -39,12 +40,20 @@ namespace osu_video_convert
 
         protected override void OnLoad(EventArgs e)
         {
-            object obj = Registry.CurrentUser.GetValue(OsuRootPathKey);
-            if (obj != null)
+            object obj = Registry.CurrentUser.GetValue(LanguageKey);
+            if (obj != null && !string.IsNullOrWhiteSpace(obj.ToString()))
+            {
+                languageCB.Text = obj.ToString();
+            }
+
+            obj = Registry.CurrentUser.GetValue(OsuRootPathKey);
+            if (obj != null && !string.IsNullOrWhiteSpace(obj.ToString()))
             {
                 Config.OsuRootPath = obj.ToString();
                 osuPathTB.Text = obj.ToString();
             }
+
+            
         }
 
         private void Log(string message)
@@ -123,7 +132,7 @@ namespace osu_video_convert
                     }
                     else
                     {
-                        MessageBox.Show("该路径不是osu!根目录，请重新选择");
+                        MessageBox.Show(Config.NotOsuPath);
                     }
 
                 }
@@ -153,14 +162,14 @@ namespace osu_video_convert
                     Directory.CreateDirectory(Config.TempPath);
                     if (!Directory.Exists(Config.TempPath))
                     {
-                        string message = $"无法创建缓存目录!  {Config.TempPath}";
+                        string message = String.Format(Config.CantCreateCache, Config.TempPath);
                         Log(message);
                         MessageBox.Show(message);
                         return;
                     }
                     else
                     {
-                        Log($"已创建缓存目录 {Config.TempPath}");
+                        Log(String.Format(Config.CreatedCache, Config.TempPath));
                     }
                 }
 
@@ -172,11 +181,12 @@ namespace osu_video_convert
 
                 if (HasFFmpeg())
                 {
-                    Log($"已加载ffmpeg {Config.FFmpegPath}");
+                    Log(String.Format(Config.LoadedFFMpeg, Config.FFmpegPath));
                 }
                 else
                 {
-                    Log($"无法加载ffmpeg {Config.FFmpegPath}");
+
+                    Log(String.Format(Config.CantLoadFFMpeg, Config.FFmpegPath));
                 }
 
 
@@ -194,7 +204,7 @@ namespace osu_video_convert
                 Watcher.Error += OnWatcherError;
                 Watcher.EnableRaisingEvents = true;
 
-                Log("文件监视器已启动.");
+                Log(Config.FileMonitorStarted);
             }
         }
 
@@ -222,7 +232,7 @@ namespace osu_video_convert
 
         private void OnWatcherError(object sender, ErrorEventArgs e)
         {
-            Log($"文件监视器发生错误:\n{e.GetException().Message}:\n{e.GetException().StackTrace}");
+            Log(String.Format(Config.FileMonitorError, e.GetException().Message, e.GetException().StackTrace));
         }
 
         private void OnRenamed(object sender, RenamedEventArgs e)
@@ -257,17 +267,17 @@ namespace osu_video_convert
                             ConvertToFlv(item.FullName);
                             if (!IsMp4(item.FullName))
                             {
-                                Log($"视频'{item.FullName}'修复完成.");
+                                Log(String.Format(Config.FixSuccess, item.FullName));
                             }
                             else
                             {
-                                Log($"视频'{item.FullName}'修复失败.");
+                                Log(String.Format(Config.FixFailure, item.FullName));
                             }
                             return;
                         }
                         else
                         {
-                            Log($"视频已经过处理，无需再次修复'{item.FullName}'.");
+                            Log(String.Format(Config.FixedVideo, item.FullName));
                         }
                     }
                 }
@@ -343,7 +353,7 @@ namespace osu_video_convert
                 //二次转换(有损)
                 using (Process proc = Process.Start(info))
                 {
-                    Log($"由于视频编码不兼容flv，正在二次转换, 本次转换耗时会长一点 {originalFile}.");
+                    Log(String.Format(Config.CantConvedrtToFlv, originalFile));// $"由于视频编码不兼容flv，正在二次转换, 本次转换耗时会长一点 {originalFile}.");
                     int maxCount = 10;
                     int count = 0;
                     string tmp;
@@ -365,7 +375,7 @@ namespace osu_video_convert
             }
             else
             {
-                Log($"转换失败: {originalFile}.");
+                Log(String.Format(Config.ConversionFailed, originalFile));
             }
             File.Delete(outputFile);
 
@@ -379,14 +389,14 @@ namespace osu_video_convert
                 byte[] buff = File.ReadAllBytes(fullName);
                 if (buff.Length < 4)
                 {
-                    Log($"文件'{fullName}'为空!");
+                    Log(String.Format(Config.FileIsEmpty, fullName));
                     return false;
                 }
                 return (buff[0] == 0 && buff[1] == 0 && buff[2] == 0);
             }
             catch (Exception e)
             {
-                Log($"{e.Message} 请稍后重试! {fullName}");
+                Log(string.Format(Config.IsMp4Error, e.Message, fullName));
                 return false;
             }
         }
@@ -400,7 +410,7 @@ namespace osu_video_convert
             }
             else
             {
-                MessageBox.Show("未找到默认路径，请手动选择");
+                MessageBox.Show(Config.CantGetOsuPath);
             }
         }
 
@@ -428,7 +438,7 @@ namespace osu_video_convert
         private void fixAll_Click(object sender, EventArgs e)
         {
             new Thread(Run).Start();
-            fixAll.Enabled = false;
+            fixAllBtn.Enabled = false;
         }
 
         private void Run()
@@ -437,28 +447,118 @@ namespace osu_video_convert
             {
                 Context.Post(new SendOrPostCallback(delegate (object obj)
                 {
-                    MessageBox.Show("未选择osu根目录，请选择后再使用");
+                    MessageBox.Show(Config.NotFoundIOsuPath);
                 }), null);
                 return;
             }
-            Log("开始处理本地所有视频文件.");
+            Log(Config.StartAll);
             foreach (var item in Directory.GetDirectories(Config.OsuSongsPath))
             {
                 FixVideo(item);
             }
-            Log("已全部处理.");
+            Log(Config.FinishAll);
             Context.Post(new SendOrPostCallback(delegate (object obj)
             {
-                fixAll.Enabled = true;
+                fixAllBtn.Enabled = true;
             }), null);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (MessageBox.Show("是否退出程序", "提示", MessageBoxButtons.YesNo) == DialogResult.No)
+            if (MessageBox.Show(Config.IsExit, Config.Messages, MessageBoxButtons.YesNo) == DialogResult.No)
             {
                 e.Cancel = true;
             }
         }
+
+        private void comboBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(languageCB.Text))
+            {
+                Registry.CurrentUser.SetValue(LanguageKey, languageCB.Text);
+                if (languageCB.Text.Equals("English"))
+                {
+                    SetEnglish();
+                }
+                else if (languageCB.Text.Equals("中文"))
+                {
+                    SetChinese();
+                }
+            }
+        }
+
+        private void SetChinese()
+        {
+            osuRootPathLabel.Text = "osu!根目录";
+            languageLabel.Text = "语言";
+            RunningLogLabel.Text = "运行日志";
+            BrowserBtn.Text = "浏览";
+            fixAllBtn.Text = "修复本地所有视频";
+            readDefaultBtn.Text = "自动获取路径";
+            this.Text = "osu!stable 视频格式修复(mp42flv) by wanjia";
+            notifyIcon.Text = $"双击恢复窗口";
+            HintLabel.Text = "*长时间运行本程序可实时监控新图并转换.";
+
+            Config.IsExit = "是否退出程序";
+            Config.Messages = "提示";
+            Config.FinishAll = "已全部处理.";
+            Config.StartAll = "开始处理本地所有视频文件.";
+            Config.NotFoundIOsuPath = "未选择osu!根目录，请选择后再使用";
+            Config.CantGetOsuPath = "未找到默认路径，请手动选择";
+            Config.FileIsEmpty = "文件'{0}'为空!";
+            Config.IsMp4Error = "{0} 请稍后重试! {1}";
+            Config.ConversionFailed = "转换失败: {0}";
+            Config.CantConvedrtToFlv = "由于视频编码不兼容flv，正在二次转换, 本次转换耗时会长一点 {0}";
+
+            Config.FixedVideo = "视频已经过处理，无需再次修复'{0}'";
+            Config.FixSuccess = "视频'{0}'修复完成.";
+            Config.FixFailure = "视频'{0}'修复失败.";
+            Config.FileMonitorError = "文件监视器发生错误:\n{0}:\n{1}";
+            Config.FileMonitorStarted = "文件监视器已启动.";
+            Config.CantLoadFFMpeg = "无法加载ffmpeg {0}";
+            Config.LoadedFFMpeg = "已加载ffmpeg {0}";
+            Config.CantCreateCache = "无法创建缓存目录!  {0}";
+            Config.CreatedCache = "已创建缓存目录  {0}";
+            Config.NotOsuPath = "该路径不是osu!根目录，请重新选择";
+        }
+
+        private void SetEnglish()
+        {
+            osuRootPathLabel.Text = "osu! root Path";
+            languageLabel.Text = "Language";
+            RunningLogLabel.Text = "Running logs";
+            BrowserBtn.Text = "Browse";
+            fixAllBtn.Text = "Fix all local videos";
+            readDefaultBtn.Text = "Get local osu! path";
+            this.Text = "osu!stable Video format repair(mp42flv) by wanjia";
+            notifyIcon.Text = $"Double click on the recovery window";
+            HintLabel.Text = "*Running this program for a long time can monitor new map in real-time and convert them.";
+
+
+            Config.IsExit = "Do you want to exit the program?";
+            Config.Messages = "Message";
+            Config.FinishAll = "All processed.";
+            Config.StartAll = "Start processing all local video files.";
+            Config.NotFoundIOsuPath = "osu! root path not selected, please select before using.";
+            Config.CantGetOsuPath = "Can't get osu! path, please manually select.";
+            Config.FileIsEmpty = "File '{0}' is empty!";
+
+            Config.IsMp4Error = "{0} Please try again later! {1}";
+            Config.ConversionFailed = $"Video format conversion failed: {0}";
+            Config.CantConvedrtToFlv = $"Due to video encoding incompatibility with FLV, it is undergoing a second conversion, which will take a little longer to complete. {0}";
+
+            Config.FixedVideo = "The video has been processed and does not need to be repaired again '{0}'";
+            Config.FixSuccess = "Video '{0}' repair completed.";
+            Config.FixFailure = "Video '{0}' repair failed.";
+            Config.FileMonitorError = "File monitor encountered an error:\n{0}:\n{1}";
+            Config.FileMonitorStarted = "File monitor started.";
+            Config.CantLoadFFMpeg = "Can't load ffmpeg {0}";
+            Config.LoadedFFMpeg = "ffmpeg loaded {0}";
+            Config.CantCreateCache = "Unable to create cache directory!  {0}";
+            Config.CreatedCache = "Created cache directory.  {0}";
+            Config.NotOsuPath = "This path is not osu! Root directory, please reselect.";
+
+        }
     }
 }
+
