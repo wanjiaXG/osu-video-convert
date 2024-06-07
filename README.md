@@ -1,7 +1,9 @@
+[相关讨论 / Related Discussions](https://github.com/ppy/osu-stable-issues/issues/1197)
+
 [下载 / Download](https://github.com/wanjiaXG/osu-video-convert/releases/tag/0.1)
 
 
-中文版: 直接看视频 https://www.bilibili.com/video/BV1W142117Lj
+中文版: 直接看视频: [https://www.bilibili.com/video/BV1W142117Lj](https://www.bilibili.com/video/BV1W142117Lj)
 1. 选择osu根目录
 2. 点击修复本地所有视频
 
