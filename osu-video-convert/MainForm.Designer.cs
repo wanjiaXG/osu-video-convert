@@ -36,12 +36,12 @@ namespace osu_video_convert
             this.BrowserBtn = new System.Windows.Forms.Button();
             this.readDefaultBtn = new System.Windows.Forms.Button();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.logTB = new System.Windows.Forms.TextBox();
             this.RunningLogLabel = new System.Windows.Forms.Label();
             this.fixAllBtn = new System.Windows.Forms.Button();
             this.languageLabel = new System.Windows.Forms.Label();
             this.languageCB = new System.Windows.Forms.ComboBox();
             this.HintLabel = new System.Windows.Forms.Label();
+            this.LogRTB = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // osuRootPathLabel
@@ -92,18 +92,6 @@ namespace osu_video_convert
             this.notifyIcon.Text = "双击恢复窗口 osu!stable 视频格式修复(mp42flv)";
             this.notifyIcon.Visible = true;
             this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon_MouseDoubleClick);
-            // 
-            // logTB
-            // 
-            this.logTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.logTB.Location = new System.Drawing.Point(12, 97);
-            this.logTB.Multiline = true;
-            this.logTB.Name = "logTB";
-            this.logTB.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.logTB.Size = new System.Drawing.Size(901, 341);
-            this.logTB.TabIndex = 5;
             // 
             // RunningLogLabel
             // 
@@ -157,17 +145,27 @@ namespace osu_video_convert
             this.HintLabel.Text = "*最小化本程序可实时监控新图并转换";
             this.HintLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // LogRTB
+            // 
+            this.LogRTB.BackColor = System.Drawing.Color.White;
+            this.LogRTB.Location = new System.Drawing.Point(15, 97);
+            this.LogRTB.Name = "LogRTB";
+            this.LogRTB.ReadOnly = true;
+            this.LogRTB.Size = new System.Drawing.Size(898, 339);
+            this.LogRTB.TabIndex = 11;
+            this.LogRTB.Text = "";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(925, 450);
+            this.ClientSize = new System.Drawing.Size(925, 448);
+            this.Controls.Add(this.LogRTB);
             this.Controls.Add(this.HintLabel);
             this.Controls.Add(this.languageCB);
             this.Controls.Add(this.languageLabel);
             this.Controls.Add(this.fixAllBtn);
             this.Controls.Add(this.RunningLogLabel);
-            this.Controls.Add(this.logTB);
             this.Controls.Add(this.readDefaultBtn);
             this.Controls.Add(this.BrowserBtn);
             this.Controls.Add(this.osuPathTB);
@@ -190,12 +188,12 @@ namespace osu_video_convert
         private System.Windows.Forms.Button BrowserBtn;
         private System.Windows.Forms.Button readDefaultBtn;
         private System.Windows.Forms.NotifyIcon notifyIcon;
-        private System.Windows.Forms.TextBox logTB;
         private System.Windows.Forms.Label RunningLogLabel;
         private System.Windows.Forms.Button fixAllBtn;
         private System.Windows.Forms.Label languageLabel;
         private System.Windows.Forms.ComboBox languageCB;
         private System.Windows.Forms.Label HintLabel;
+        private System.Windows.Forms.RichTextBox LogRTB;
     }
 }
 

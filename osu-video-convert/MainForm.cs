@@ -56,16 +56,58 @@ namespace osu_video_convert
             
         }
 
-        private void Log(string message)
+        private void LogWarn(string message)
+        {
+            Log(message, Color.Orange);
+        }
+
+        private void LogError(string message)
+        {
+            Log(message, Color.Red);
+        }
+
+        private void LogInfo(string message)
+        {
+            Log(message, Color.Black);
+        }
+
+        private void Log(string message, Color color)
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
                 Context.Post(new SendOrPostCallback(delegate (object obj)
                 {
-                    logTB.AppendText($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]: {obj}\r\n");
+                    string msg = $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]: {obj}";
+                    ShowText(msg, color);
+                    LogRTB.AppendText("\r\n");
+                    
+                    //logRTB.a($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]: {obj}\r\n");
+                    //logTB.AppendText($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]: {obj}\r\n");
                 }), message);
 
             }
+        }
+
+        private void ShowText(string msg, Color color)
+        {
+            int start = LogRTB.Text.Length;
+
+            LogRTB.AppendText (msg);
+
+            // 保存当前位置
+            int oldStart = LogRTB.SelectionStart;
+            int oldLength = LogRTB.SelectionLength;
+            Color oldColor = LogRTB.SelectionColor;
+
+            // 选中要修改的范围
+            LogRTB.SelectionStart = start;
+            LogRTB.SelectionLength = msg.Length;
+            LogRTB.SelectionColor = color;
+
+            // 恢复光标位置和颜色
+            LogRTB.SelectionStart = oldStart;
+            LogRTB.SelectionLength = oldLength;
+            LogRTB.SelectionColor = oldColor;
         }
 
         public static string GetOsuPath()
@@ -170,13 +212,13 @@ namespace osu_video_convert
                     if (!Directory.Exists(Config.TempPath))
                     {
                         string message = String.Format(Config.CantCreateCache, Config.TempPath);
-                        Log(message);
+                        LogInfo(message);
                         MessageBox.Show(message);
                         return;
                     }
                     else
                     {
-                        Log(String.Format(Config.CreatedCache, Config.TempPath));
+                        LogInfo(String.Format(Config.CreatedCache, Config.TempPath));
                     }
                 }
 
@@ -188,12 +230,12 @@ namespace osu_video_convert
 
                 if (HasFFmpeg())
                 {
-                    Log(String.Format(Config.LoadedFFMpeg, Config.FFmpegPath));
+                    LogInfo(String.Format(Config.LoadedFFMpeg, Config.FFmpegPath));
                 }
                 else
                 {
 
-                    Log(String.Format(Config.CantLoadFFMpeg, Config.FFmpegPath));
+                    LogError(String.Format(Config.CantLoadFFMpeg, Config.FFmpegPath));
                 }
 
 
@@ -211,7 +253,7 @@ namespace osu_video_convert
                 Watcher.Error += OnWatcherError;
                 Watcher.EnableRaisingEvents = true;
 
-                Log(Config.FileMonitorStarted);
+                LogInfo(Config.FileMonitorStarted);
             }
         }
 
@@ -239,7 +281,7 @@ namespace osu_video_convert
 
         private void OnWatcherError(object sender, ErrorEventArgs e)
         {
-            Log(String.Format(Config.FileMonitorError, e.GetException().Message, e.GetException().StackTrace));
+            LogError(String.Format(Config.FileMonitorError, e.GetException().Message, e.GetException().StackTrace));
         }
 
         private void OnRenamed(object sender, RenamedEventArgs e)
@@ -274,17 +316,17 @@ namespace osu_video_convert
                             ConvertToFlv(item.FullName);
                             if (!IsMp4(item.FullName))
                             {
-                                Log(String.Format(Config.FixSuccess, item.FullName));
+                                LogInfo(String.Format(Config.FixSuccess, item.FullName));
                             }
                             else
                             {
-                                Log(String.Format(Config.FixFailure, item.FullName));
+                                LogError(String.Format(Config.FixFailure, item.FullName));
                             }
                             return;
                         }
                         else
                         {
-                            Log(String.Format(Config.FixedVideo, item.FullName));
+                            LogInfo(String.Format(Config.FixedVideo, item.FullName));
                         }
                     }
                 }
@@ -322,7 +364,7 @@ namespace osu_video_convert
                 }
             }
             int birate = 0;
-            if (File.ReadAllBytes(outputFile).Length <= 0)
+            if (File.Exists(outputFile) && File.ReadAllBytes(outputFile).Length <= 0)
             {
                 //需要完整转码
 
@@ -360,7 +402,7 @@ namespace osu_video_convert
                 //二次转换(有损)
                 using (Process proc = Process.Start(info))
                 {
-                    Log(String.Format(Config.CantConvedrtToFlv, originalFile));// $"由于视频编码不兼容flv，正在二次转换, 本次转换耗时会长一点 {originalFile}.");
+                    LogWarn(String.Format(Config.CantConvedrtToFlv, originalFile));// $"由于视频编码不兼容flv，正在二次转换, 本次转换耗时会长一点 {originalFile}.");
                     int maxCount = 10;
                     int count = 0;
                     string tmp;
@@ -374,7 +416,7 @@ namespace osu_video_convert
                 }
             }
 
-            if (File.ReadAllBytes(outputFile).Length > 0)
+            if (File.Exists(outputFile) && File.ReadAllBytes(outputFile).Length > 0)
             {
                 File.Copy(outputFile, originalFile, true);
                 File.Delete(outputFile);
@@ -382,7 +424,7 @@ namespace osu_video_convert
             }
             else
             {
-                Log(String.Format(Config.ConversionFailed, originalFile));
+                LogError(String.Format(Config.ConversionFailed, originalFile));
             }
             File.Delete(outputFile);
 
@@ -396,14 +438,14 @@ namespace osu_video_convert
                 byte[] buff = File.ReadAllBytes(fullName);
                 if (buff.Length < 4)
                 {
-                    Log(String.Format(Config.FileIsEmpty, fullName));
+                    LogInfo(String.Format(Config.FileIsEmpty, fullName));
                     return false;
                 }
                 return (buff[0] == 0 && buff[1] == 0 && buff[2] == 0);
             }
             catch (Exception e)
             {
-                Log(string.Format(Config.IsMp4Error, e.Message, fullName));
+                LogError(string.Format(Config.IsMp4Error, e.Message, fullName));
                 return false;
             }
         }
@@ -458,12 +500,12 @@ namespace osu_video_convert
                 }), null);
                 return;
             }
-            Log(Config.StartAll);
+            LogInfo(Config.StartAll);
             foreach (var item in Directory.GetDirectories(Config.OsuSongsPath))
             {
                 FixVideo(item);
             }
-            Log(Config.FinishAll);
+            LogInfo(Config.FinishAll);
             Context.Post(new SendOrPostCallback(delegate (object obj)
             {
                 fixAllBtn.Enabled = true;
