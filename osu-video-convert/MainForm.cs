@@ -111,7 +111,14 @@ namespace osu_video_convert
             {
                 using (var reg = registry.OpenSubKey(Subkey, false))
                 {
-                    return reg.GetValue(key);
+                    if (reg != null)
+                    {
+                        return reg.GetValue(key);
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
                 }
             }
             catch
@@ -246,7 +253,7 @@ namespace osu_video_convert
             FixVideo(e.FullPath);
         }
 
-        private static string[] Extensions = new[] { ".avi", ".mp4", "*.flv"};
+        private static string[] Extensions = new[] { ".avi", ".mp4", ".flv", ".m4v" };
         private void FixVideo(string fullPath)
         {
             if (Directory.Exists(fullPath))
