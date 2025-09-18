@@ -1,7 +1,8 @@
-[2025-09-18]update, redownload pls.
+###  [2025-09-18]update, redownload pls.
 1. fix flv and add m4v extension file. (Thanks [@lingjiang](https://osu.ppy.sh/users/8223096))
 2. fix registry.
 3. fix crashes caused by damaged video files. (Thanks [@真心酱](https://space.bilibili.com/185957))
+4. Add highlighted text to the log.
 
 [相关讨论 / Related Discussions](https://github.com/ppy/osu-stable-issues/issues/1197)
 
