@@ -147,6 +147,9 @@ namespace osu_video_convert
             // 
             // LogRTB
             // 
+            this.LogRTB.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LogRTB.BackColor = System.Drawing.Color.White;
             this.LogRTB.Location = new System.Drawing.Point(15, 97);
             this.LogRTB.Name = "LogRTB";
